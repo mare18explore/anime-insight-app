@@ -1,17 +1,22 @@
 import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Button,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+	Alert,
+	Button,
+	Image,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View
 } from 'react-native';
+import { useWatchlist } from '../context/WatchlistContext';
 
 export default function AnimeDetails() {
   const { anime } = useLocalSearchParams();
+  
+  const { addToWatchlist, watchlist} = useWatchlist();
 
+	const [alreadyAdded, setAlreadyAdded] = useState(false);
   // Parse the anime object passed from previous screen
   const parsed = typeof anime === 'string' ? JSON.parse(anime) : anime;
 
@@ -20,6 +25,17 @@ export default function AnimeDetails() {
     ? parsed.description.replace(/<[^>]+>/g, '')
     : 'No description available.';
 
+	useEffect(() => {
+    const exists = watchlist.some((item) => item.id === parsed.id);
+    setAlreadyAdded(exists);
+  }, [watchlist]);
+
+  const handleAdd = () => {
+    if (alreadyAdded) return;
+    addToWatchlist(parsed);
+    Alert.alert('Added to Watchlist');
+    setAlreadyAdded(true);
+  };
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Smaller image */}
@@ -46,7 +62,10 @@ export default function AnimeDetails() {
       <Text style={styles.description}>{cleanDescription}</Text>
 
       {/* Watchlist button NOT DONEEE!!*/}
-      <Button title="Add to Watchlist" onPress={() => {}} />
+      <Button title={alreadyAdded ? 'Added to Watchlist' : 'Add to Watchlist'} 
+				onPress={handleAdd}
+        disabled={alreadyAdded}
+      />
     </ScrollView>
   );
 }
