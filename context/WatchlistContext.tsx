@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
-import type { AnimeResult } from '../../app/types';
+import type { AnimeResult } from '../utils/types';
 
 // Define what our Watchlist context should provide to components 
 // whta context this should provide 

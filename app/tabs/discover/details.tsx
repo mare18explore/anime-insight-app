@@ -1,15 +1,15 @@
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-	Alert,
-	Button,
-	Image,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View
+  Alert,
+  Button,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
-import { useWatchlist } from '../context/WatchlistContext';
+import { useWatchlist } from '../../../context/WatchlistContext';
 
 export default function AnimeDetails() {
   const { anime } = useLocalSearchParams();

@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useWatchlist } from './context/WatchlistContext';
+import { useWatchlist } from '../../context/WatchlistContext';
 
 export default function WatchlistScreen() {
   // Grab the current watchlist and the function to remove anime,
@@ -25,13 +25,16 @@ export default function WatchlistScreen() {
         <TouchableOpacity
           onPress={() =>
             router.push({
-              pathname: '/discover/details',
+              pathname: '/tabs/discover/details',
               params: { anime: JSON.stringify(item) }
             })
           }
         >
           <View style={styles.card}>
-            <Image source={{ uri: item.coverImage?.large }} style={styles.image} />
+            <Image 
+            source={{ uri: item.coverImage?.large }} 
+            resizeMode='cover'
+            style={{width:60, height:40}} />
             <View style={{ flex: 1 }}>
               <Text style={styles.title}>{item.title.romaji || item.title.english}</Text>
               <Text style={styles.genre}>{item.genres?.join(', ')}</Text>

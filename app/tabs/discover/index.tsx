@@ -1,18 +1,18 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-	Button,
-	FlatList,
-	Image,
-	StyleSheet,
-	Text,
-	TextInput,
-	TouchableOpacity,
-	View
+  Button,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
-import { searchAnime } from '../../api/anilist';
-import type { AnimeResult } from '../../app/types';
+import { searchAnime } from '../../../api/anilist';
+import type { AnimeResult } from '../../../utils/types';
 
 export default function AnimeSearch() {
   const router = useRouter();
@@ -64,7 +64,7 @@ export default function AnimeSearch() {
             // Navigate to details screen with serialized anime object
             onPress={() =>
               router.push({
-                pathname: '/discover/details',
+                pathname: '/tabs/discover/details',
                 params: { anime: JSON.stringify(item) }
               })
             }
