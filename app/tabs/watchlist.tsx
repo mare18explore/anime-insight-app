@@ -34,11 +34,9 @@ export default function WatchlistScreen() {
             <Image 
             source={{ uri: item.coverImage?.large }} 
             resizeMode='cover'
-            style={{width:60, height:40}} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.title}>{item.title.romaji || item.title.english}</Text>
-              <Text style={styles.genre}>{item.genres?.join(', ')}</Text>
-              <Text style={styles.score}>⭐ {item.averageScore}/100</Text>
+            style={styles.image} />
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text style={styles.title}>{item.title.romaji || item.title.english|| "Untitled"}</Text>
               <TouchableOpacity onPress={() => removeFromWatchlist(item.id)}>
                 <Text style={styles.remove}>Remove from Watchlist</Text>
               </TouchableOpacity>
@@ -61,7 +59,8 @@ const styles = StyleSheet.create({
     color: '#777'
   },
   container: {
-    padding: 16
+    padding: 16,
+    flex: 1
   },
   card: {
     flexDirection: 'row',
@@ -71,26 +70,18 @@ const styles = StyleSheet.create({
     borderRadius: 6
   },
   image: {
-    width: 60,
-    height: 80,
-    marginRight: 10,
-    borderRadius: 4
+    width: 100,
+    height: 150,
+    borderRadius: 10
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold'
   },
-  genre: {
-    fontSize: 13,
-    color: '#555'
-  },
-  score: {
-    fontSize: 13,
-    color: '#777'
-  },
+
   remove: {
     color: 'red',
-    marginTop: 4,
+    marginTop: 10,
     fontSize: 12
   }
 });
