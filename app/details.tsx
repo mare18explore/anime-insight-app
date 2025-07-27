@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { getAuth } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -13,12 +14,27 @@ import {
 import { useWatchlist } from '../context/WatchlistContext';
 
 export default function AnimeDetails() {
+  // loggedIn Boolean is true if user signed in the firebase auth
+  const user = getAuth().currentUser;
+  const isLoggedIn = !!user;
+ 
   const router = useRouter();
+  // grab the anime object passed in the route params
   const { anime } = useLocalSearchParams();
   
   const { addToWatchlist, watchlist} = useWatchlist();
-
+  // track if this anime is already in the user's watchlist
 	const [alreadyAdded, setAlreadyAdded] = useState(false);
+  // Set default values for the watchlist button
+  let buttonTitle = 'Login to Add';
+  let isDisabled = true;
+  // update button label and disabled state based on conditions
+  if (alreadyAdded) {
+    buttonTitle = 'Added to Watchlist';
+  } else if (isLoggedIn) {
+    buttonTitle = 'Add to Watchlist';
+    isDisabled = false;
+  }
   // Parse the anime object passed from previous screen
   const parsed = typeof anime === 'string' ? JSON.parse(anime) : anime;
   
@@ -29,6 +45,9 @@ export default function AnimeDetails() {
     : 'No description available.';
 
 	useEffect(() => {
+    // putting checker b/c i assumed valdiity ealier 
+    if (!parsed?.id) 
+      return;
     const exists = watchlist.some((item) => item.id === parsed.id);
     setAlreadyAdded(exists);
   }, [watchlist]);
@@ -72,11 +91,11 @@ export default function AnimeDetails() {
 
       {/* description */}
       <Text style={styles.description}>{cleanDescription}</Text>
-
-      {/* Watchlist button NOT DONEEE!!*/}
-      <Button title={alreadyAdded ? 'Added to Watchlist' : 'Add to Watchlist'} 
-				onPress={handleAdd}
-        disabled={alreadyAdded}
+          
+      <Button
+        title={buttonTitle}
+        onPress={handleAdd}
+        disabled={isDisabled}
       />
     </ScrollView>
   );
