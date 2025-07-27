@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // Converts seconds into "Xd Xh Xm" format
 const formatTime = (seconds: number) => {
   const d = Math.floor(seconds / 86400);
@@ -21,22 +21,31 @@ interface AnimeItem {
 }
 
 export default function HomeAnimeAiring() {
+  // Genres user can choose from (used for filtering)
+  const genres = ['All', 'Action','Adventure', 'Comedy', 'Romance', 'Mystery', 'Sports', 'Fantasy', 'Psychological', 'Thriller'];
   const [loading, setLoading] = useState(true);
   const [airingList, setAiringList] = useState<AnimeItem[]>([]);
   const router = useRouter();
   // Run once when component mounts
+  // changes for each slected genre, rerun everytime genre changes 
+  const [selectedGenre, setSelectedGenre] = useState('All');
   useEffect(() => {
     fetchAiringAnime();
-  }, []);
+  }, [selectedGenre]);
 
   const fetchAiringAnime = async () => {
     setLoading(true);
 
     // AniList GraphQL query
     const query = `
-      query {
+      query ($genre: [String]) {
         Page(page: 1, perPage: 10) {
-          media(sort: POPULARITY_DESC, type: ANIME, status: RELEASING) {
+          media(
+            sort: POPULARITY_DESC,
+            type: ANIME,
+            status: RELEASING,
+            genre_in: $genre
+          ) {
             id
             title {
               romaji
@@ -65,10 +74,21 @@ export default function HomeAnimeAiring() {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({
+          query,
+          variables: {
+            genre: selectedGenre === 'All' ? null : selectedGenre
+          }
+        })
       });
 
       const json = await res.json();
+      if (!json?.data?.Page?.media) {
+        console.error('AniList error:', JSON.stringify(json, null, 2));
+        setAiringList([]);
+        setLoading(false);
+        return;
+      }
 
       // Format the response
       const formatted: AnimeItem[] = json.data.Page.media.map((anime: any) => {
@@ -114,7 +134,24 @@ export default function HomeAnimeAiring() {
   return (
     // RETURNS LIST OF CURRENT AIRING ANIME BUT ADDED IMAGE TO IT THAT REDIRECTS TO DETAILS WHEN PRESSED
     <View style={styles.container}>
-      <Text style={styles.heading}>🔥 Popular Airing Anime</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.genreScroll}>
+          {genres.map((genre) => (
+            <TouchableOpacity
+              key={genre}
+              onPress={() => setSelectedGenre(genre)}
+              style={[
+                styles.genreButton,
+                selectedGenre === genre && styles.selectedGenre
+              ]}
+            >
+              <Text style={styles.genreText}>{genre}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        <Text style={styles.heading}>
+          {selectedGenre === 'All' ? '🔥 Popular Airing Anime' : `🎯 Top ${selectedGenre} Anime`}
+        </Text>
 
       <FlatList
         data={airingList}
@@ -128,6 +165,7 @@ export default function HomeAnimeAiring() {
               })
             }
         >
+          
           <View style={styles.card}>
             <Image
               source={{ uri: item.coverImage?.large || 'https://placehold.co/100x150' }}
@@ -182,4 +220,21 @@ const styles = StyleSheet.create({
     color: '#007aff',
     marginTop: 4,
   },
+   genreScroll: {
+  flexDirection: 'row',
+  marginBottom: 10
+},
+genreButton: {
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  backgroundColor: '#eee',
+  borderRadius: 20,
+  marginRight: 8
+},
+selectedGenre: {
+  backgroundColor: '#007aff'
+},
+genreText: {
+  color: '#000'
+}
 });
