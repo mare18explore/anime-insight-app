@@ -25,7 +25,7 @@ export default function WatchlistScreen() {
         <TouchableOpacity
           onPress={() =>
             router.push({
-              pathname: '/tabs/discover/details',
+              pathname: '/details',
               params: { anime: JSON.stringify(item) }
             })
           }

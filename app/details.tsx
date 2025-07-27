@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -7,11 +7,13 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View
 } from 'react-native';
-import { useWatchlist } from '../../../context/WatchlistContext';
+import { useWatchlist } from '../context/WatchlistContext';
 
 export default function AnimeDetails() {
+  const router = useRouter();
   const { anime } = useLocalSearchParams();
   
   const { addToWatchlist, watchlist} = useWatchlist();
@@ -19,6 +21,7 @@ export default function AnimeDetails() {
 	const [alreadyAdded, setAlreadyAdded] = useState(false);
   // Parse the anime object passed from previous screen
   const parsed = typeof anime === 'string' ? JSON.parse(anime) : anime;
+  
 
   // Just in case description is missing or full object isn't passed
   const cleanDescription = parsed?.description
@@ -40,6 +43,11 @@ export default function AnimeDetails() {
     <ScrollView contentContainerStyle={styles.container}>
       {/* Smaller image */}
       <View style={styles.imageWrapper}>
+         {/* router back lets me go back to prev screen, so im naviagting using router,
+         back button with back test and inputted styles below */}
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>← Back</Text>
+        </TouchableOpacity>
         <Image
           source={{ uri: parsed.coverImage?.large }}
           style={styles.cover}
@@ -97,5 +105,18 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 14,
     color: '#555'
-  }
+  },
+  backButton: {
+  marginBottom: 12,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  alignSelf: 'flex-start',
+  backgroundColor: '#eee',
+  borderRadius: 6,
+},
+
+backText: {
+  fontSize: 16,
+  color: '#007aff',
+}
 });

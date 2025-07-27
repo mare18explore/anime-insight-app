@@ -1,6 +1,6 @@
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // Converts seconds into "Xd Xh Xm" format
 const formatTime = (seconds: number) => {
   const d = Math.floor(seconds / 86400);
@@ -15,12 +15,15 @@ interface AnimeItem {
   episode: number | string;
   airingAt: string;
   timeRemaining: string;
+  coverImage: {
+    large: string;
+  };
 }
 
 export default function HomeAnimeAiring() {
   const [loading, setLoading] = useState(true);
   const [airingList, setAiringList] = useState<AnimeItem[]>([]);
-
+  const router = useRouter();
   // Run once when component mounts
   useEffect(() => {
     fetchAiringAnime();
@@ -44,6 +47,12 @@ export default function HomeAnimeAiring() {
               airingAt
               timeUntilAiring
             }
+            coverImage {
+              large
+            }
+            description
+            averageScore
+            genres
           }
         }
       }
@@ -71,13 +80,18 @@ export default function HomeAnimeAiring() {
         const timeLeft = anime.nextAiringEpisode?.timeUntilAiring
           ? formatTime(anime.nextAiringEpisode.timeUntilAiring)
           : 'N/A';
-
+        
         return {
           id: anime.id,
           title,
           episode: ep,
           airingAt: airingTime,
           timeRemaining: timeLeft,
+          coverImage: anime.coverImage,
+          description: anime.description,
+          averageScore: anime.averageScore,
+          genres: anime.genres
+
         };
       });
 
@@ -98,6 +112,7 @@ export default function HomeAnimeAiring() {
   }
 
   return (
+    // RETURNS LIST OF CURRENT AIRING ANIME BUT ADDED IMAGE TO IT THAT REDIRECTS TO DETAILS WHEN PRESSED
     <View style={styles.container}>
       <Text style={styles.heading}>🔥 Popular Airing Anime</Text>
 
@@ -105,11 +120,27 @@ export default function HomeAnimeAiring() {
         data={airingList}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: '../details', // adjust this path if needed
+                params: { anime: JSON.stringify(item) }
+              })
+            }
+        >
           <View style={styles.card}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.info}>Ep {item.episode} — {item.airingAt}</Text>
-            <Text style={styles.remaining}>⏳ {item.timeRemaining}</Text>
-          </View>
+            <Image
+              source={{ uri: item.coverImage?.large || 'https://placehold.co/100x150' }}
+              style={styles.cover}
+              resizeMode="cover"
+            />
+            <View style={{flex:1}}>
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.info}>Ep {item.episode} — {item.airingAt}</Text>
+              <Text style={styles.remaining}>⏳ {item.timeRemaining}</Text>
+            </View>
+         </View>
+        </TouchableOpacity>
         )}
       />
     </View>
@@ -120,6 +151,12 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     marginTop: 16,
+  },
+  cover: {
+    width: 100,
+    height: 150,
+    borderRadius:10 ,
+    marginRight: 10,
   },
   heading: {
     fontSize: 18,

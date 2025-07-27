@@ -64,7 +64,7 @@ export default function AnimeSearch() {
             // Navigate to details screen with serialized anime object
             onPress={() =>
               router.push({
-                pathname: '/tabs/discover/details',
+                pathname: '../details',
                 params: { anime: JSON.stringify(item) }
               })
             }
