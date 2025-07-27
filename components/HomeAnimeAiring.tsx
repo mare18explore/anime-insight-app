@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // Converts seconds into "Xd Xh Xm" format
 const formatTime = (seconds: number) => {
@@ -11,7 +11,10 @@ const formatTime = (seconds: number) => {
 
 interface AnimeItem {
   id: number;
-  title: string;
+  title: {
+    romaji: string;
+    english: string;
+  };
   episode: number | string;
   airingAt: string;
   timeRemaining: string;
@@ -33,7 +36,7 @@ export default function HomeAnimeAiring() {
     fetchAiringAnime();
   }, [selectedGenre]);
 
-  const fetchAiringAnime = async () => {
+  const fetchAiringAnime = useCallback(async () => {
     setLoading(true);
 
     // AniList GraphQL query
@@ -103,7 +106,10 @@ export default function HomeAnimeAiring() {
         
         return {
           id: anime.id,
-          title,
+          title: {
+            romaji: anime.title.romaji,
+            english: anime.title.english
+          },
           episode: ep,
           airingAt: airingTime,
           timeRemaining: timeLeft,
@@ -121,7 +127,7 @@ export default function HomeAnimeAiring() {
     }
 
     setLoading(false);
-  };
+  }, [selectedGenre]);
 
   if (loading) {
     return (
@@ -173,7 +179,9 @@ export default function HomeAnimeAiring() {
               resizeMode="cover"
             />
             <View style={{flex:1}}>
-              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.title}>
+                {item.title.english || item.title.romaji || 'Untitled'}
+              </Text>
               <Text style={styles.info}>Ep {item.episode} — {item.airingAt}</Text>
               <Text style={styles.remaining}>⏳ {item.timeRemaining}</Text>
             </View>

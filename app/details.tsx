@@ -34,11 +34,13 @@ export default function AnimeDetails() {
   }, [watchlist]);
 
   const handleAdd = () => {
-    if (alreadyAdded) return;
+    if (alreadyAdded) 
+      return;
     addToWatchlist(parsed);
     Alert.alert('Added to Watchlist');
     setAlreadyAdded(true);
   };
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Smaller image */}
@@ -56,7 +58,9 @@ export default function AnimeDetails() {
       </View>
 
       {/* title */}
-      <Text style={styles.title}>{parsed.title?.romaji}</Text>
+      <Text style={styles.title}>
+        {parsed.title?.romaji || parsed.title?.english || 'Untitled'}
+      </Text>
 
       {/* Rating out of 100 */}
       <Text style={styles.info}>Rating: {parsed.averageScore ?? 'N/A'}/100</Text>

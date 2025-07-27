@@ -20,35 +20,45 @@ export default function WatchlistScreen() {
     <FlatList
       contentContainerStyle={styles.container}
       data={watchlist}
+      horizontal={true}
       keyExtractor={(item) => item.id.toString()}
+
       renderItem={({ item }) => (
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: '/details',
-              params: { anime: JSON.stringify(item) }
-            })
-          }
-        >
-          <View style={styles.card}>
+        <View style={styles.card}>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: '/details',
+                params: { anime: JSON.stringify(item) }
+              })
+            }
+          >  
+            <Text style={styles.title}  numberOfLines={2}>
+                {item.title?.romaji || item.title?.english || 'Untitled'}
+           
+            </Text>
             <Image 
-            source={{ uri: item.coverImage?.large }} 
-            resizeMode='cover'
-            style={styles.image} />
-            <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={styles.title}>{item.title.romaji || item.title.english|| "Untitled"}</Text>
-              <TouchableOpacity onPress={() => removeFromWatchlist(item.id)}>
-                <Text style={styles.remove}>Remove from Watchlist</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableOpacity>
+              source={{ uri: item.coverImage?.large }} 
+              resizeMode='cover'
+              style={styles.image}
+            />
+          </TouchableOpacity>
+              
+          <TouchableOpacity 
+            style={styles.removeButton} 
+            onPress={() => removeFromWatchlist(item.id)}
+          >
+            <Text style={styles.removeText}>Remove</Text>
+          </TouchableOpacity>
+            
+        </View>
       )}
     />
   );
 }
 
 const styles = StyleSheet.create({
+  
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -63,11 +73,12 @@ const styles = StyleSheet.create({
     flex: 1
   },
   card: {
-    flexDirection: 'row',
-    marginBottom: 12,
+    alignItems: 'center',
+    marginRight: 16,
     padding: 8,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 6
+    backgroundColor: '#blue',
+    borderRadius: 10,
+    width: 140,
   },
   image: {
     width: 100,
@@ -75,13 +86,24 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   title: {
-    fontSize: 16,
-    fontWeight: 'bold'
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginBottom : 5,
+    textAlign: 'center',
+    height: 40,
   },
 
-  remove: {
-    color: 'red',
-    marginTop: 10,
-    fontSize: 12
-  }
+  removeButton: {
+    marginTop: 8,
+    backgroundColor: '#ff4d4d',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 6
+  },
+
+  removeText: {
+    color: 'white',
+    fontSize: 12,
+    textAlign: 'center'
+  },
 });
