@@ -32,10 +32,11 @@ yarn-error.*
 
 # local env files
 .env*.local
-
+**/.env
+**/config.js
 # typescript
 *.tsbuildinfo
 
 app-example
-firebase/config.js
+app/backend/config.js
 api.js
