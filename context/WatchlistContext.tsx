@@ -45,12 +45,21 @@ export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
     const fetchWatchlist = async () => {
       try {
         const res = await fetch(`${BASE_URL}/api/watchlist/${userId}`);
+
+        if (!res.ok) {
+          throw new Error(`Server responded with status ${res.status}`);
+        }
+
         const data = await res.json();
-        setWatchlist(data);
+        // extract anime object from each item
+        const cleaned = data
+          .map((entry: { anime: AnimeResult }) => entry.anime)
+          .filter((anime: AnimeResult | undefined): anime is AnimeResult => anime !== undefined);
+        setWatchlist(cleaned);
       } catch (err) {
         console.error('Failed to load watchlist:', err);
       }
-    };
+    }
 
     fetchWatchlist();
   }, [userId]);
@@ -84,9 +93,15 @@ export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
       console.error('Failed to save to backend:', err);
     }
   };
-	// Function to remove anime from watchlist by id
-  const removeFromWatchlist = async (id: number) => {
+	// Function to remove anime from watchlist by id, made edits to get rid of error
+  const removeFromWatchlist = async (id: number | undefined) => {
+    if (typeof id !== 'number') {
+      console.warn('removeFromWatchlist called with invalid id:', id);
+      return;
+    }
+
     setWatchlist((prev) => prev.filter((item) => item.id !== id));
+
     try {
       await fetch(`${BASE_URL}/api/watchlist/${userId}/${id}`, {
         method: 'DELETE'
@@ -95,7 +110,6 @@ export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
       console.error('Failed to delete from backend:', err);
     }
   };
-
   return (
     <WatchlistContext.Provider value={{ watchlist, addToWatchlist, removeFromWatchlist }}>
       {children}

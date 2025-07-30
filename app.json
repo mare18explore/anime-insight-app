@@ -11,6 +11,9 @@
     "ios": {
       "supportsTablet": true
     },
+     "extra": {
+      "BASE_URL"  : "http://192.168.1.65:5055"
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

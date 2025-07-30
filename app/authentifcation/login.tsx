@@ -19,7 +19,7 @@ export default function LoginScreen() {
 
     // min password length
     if (password.length < 6) {
-      Alert.alert('Password must be at least 6 characters');
+      console.log('Password must be at least 6 characters');
       return;
     }
 
@@ -28,9 +28,9 @@ export default function LoginScreen() {
       await signInWithEmailAndPassword(auth, email, password);
 
       // successful, show message and navigate
-      Alert.alert('Login successful!');
+      console.log('Login successful!');
        // redirect to homepage or dashboard
-       router.replace('../tabs');
+       router.replace('/tabs');
     } catch (error: any) {
       // Handle common Firebase auth errors nicely
       let msg = error.message;
@@ -42,7 +42,7 @@ export default function LoginScreen() {
       }
 
       // Show error lert
-      Alert.alert('Login failed', msg);
+      console.log('Login failed', msg);
     }
   };
 
@@ -74,7 +74,7 @@ export default function LoginScreen() {
       {/* Link to register screen */}
       <Text
         style={styles.link}
-        onPress={() => router.push('../register')}
+        onPress={() => router.push('/authentifcation/register')}
       >
         Don't have an account? Register
       </Text>

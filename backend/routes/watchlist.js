@@ -18,7 +18,7 @@ router.get('/check/:userId/:animeId', async (req, res) => {
   try {
     const { userId, animeId } = req.params;
 
-    const exists = await Watchlist.findOne({ userId, animeId });
+    const exists = await Watchlist.findOne({ userId, 'anime.id': Number(animeId) });
     res.json({ exists: !!exists }); // return true or false
   } catch (err) {
     res.status(500).json({ error: 'Check failed' });
@@ -31,15 +31,13 @@ router.post('/', async (req, res) => {
     const { userId, anime } = req.body;
 
     // Prevent duplicates — only one of each anime per user
-    const exists = await Watchlist.findOne({ userId, animeId: anime.id });
+     const exists = await Watchlist.findOne({ userId, 'anime.id': anime.id });
     if (exists) return res.status(409).json({ message: 'Anime already in watchlist' });
 
     // Create and save a new watchlist entry
     const newEntry = new Watchlist({
       userId,
-      animeId: anime.id,
-      title: anime.title,
-      coverImage: anime.coverImage
+      anime // store full object
     });
 
     await newEntry.save();
@@ -54,7 +52,7 @@ router.delete('/:userId/:animeId', async (req, res) => {
   try {
     const { userId, animeId } = req.params;
 
-    await Watchlist.deleteOne({ userId, animeId });
+    await Watchlist.deleteOne({ userId, 'anime.id': Number(animeId) });
     res.json({ message: 'Removed from watchlist' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to remove from watchlist' });

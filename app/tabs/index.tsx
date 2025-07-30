@@ -1,3 +1,4 @@
+import { Stack } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import HomeAnimeAiring from '../../components/HomeAnimeAiring';
 import ProfileMenu from '../../components/ProfileMenu';
@@ -5,8 +6,13 @@ import ProfileMenu from '../../components/ProfileMenu';
 export default function HomeScreen() {
   return (
     <View style={{ flex: 1 }}>
-      {/* Profile icon */}
-      <ProfileMenu />
+      {/* Sets the screen header options like title and profile icon on top right */}
+      <Stack.Screen
+        options={{
+          title: 'Home',
+          headerRight: () => <ProfileMenu />,
+        }}
+      />
 
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.heading}>This Week in Anime 

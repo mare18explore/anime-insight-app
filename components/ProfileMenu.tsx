@@ -65,14 +65,14 @@ export default ProfileMenu;
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 40,
+    top: 0,
     right: 20,
     zIndex: 999,
   },
   avatar: {
-    width: 40,
+    width: 50,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 30,
   },
   overlay: {
     flex: 1,

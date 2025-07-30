@@ -15,14 +15,21 @@ export default function WatchlistScreen() {
       </View>
     );
   }
+    const handleRemove = (id: number | undefined) => {
+    if (!id) {
+      console.warn('Tried to delete anime with no ID');
+      return;
+    }
+    removeFromWatchlist(id);
+  };
 
   return (
     <FlatList
       contentContainerStyle={styles.container}
       data={watchlist}
       horizontal={true}
-      keyExtractor={(item) => item.id.toString()}
-
+      keyExtractor={(item, index) => 
+        item?.id?.toString?.() ?? index.toString()}
       renderItem={({ item }) => (
         <View style={styles.card}>
           <TouchableOpacity
@@ -46,7 +53,8 @@ export default function WatchlistScreen() {
               
           <TouchableOpacity 
             style={styles.removeButton} 
-            onPress={() => removeFromWatchlist(item.id)}
+            
+            onPress={() => handleRemove(item.id)}
           >
             <Text style={styles.removeText}>Remove</Text>
           </TouchableOpacity>

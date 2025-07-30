@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { getAuth } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import {
@@ -17,7 +17,7 @@ export default function AnimeDetails() {
   // loggedIn Boolean is true if user signed in the firebase auth
   const user = getAuth().currentUser;
   const isLoggedIn = !!user;
- 
+  const navigation = useNavigation();
   const router = useRouter();
   // grab the anime object passed in the route params
   const { anime } = useLocalSearchParams();
@@ -51,6 +51,11 @@ export default function AnimeDetails() {
     const exists = watchlist.some((item) => item.id === parsed.id);
     setAlreadyAdded(exists);
   }, [watchlist]);
+  // confriming if anime is doubplicated 
+  useEffect(() => {
+    console.log('Watchlist updated:', watchlist.map(a => a.id));
+    console.log('Checking for anime ID:', parsed?.id);
+  }, [watchlist])
 
   const handleAdd = () => {
     if (alreadyAdded) 
@@ -66,9 +71,20 @@ export default function AnimeDetails() {
       <View style={styles.imageWrapper}>
          {/* router back lets me go back to prev screen, so im naviagting using router,
          back button with back test and inputted styles below */}
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={() => {
+          if (navigation.canGoBack?.()) {
+            router.back();
+          } else {
+            // fallback route
+            router.replace('/'); 
+          }
+        }}
+        style={styles.backButton}
+      >
+       
+        <Text style={styles.backText}>← Back</Text>
+      </TouchableOpacity>
         <Image
           source={{ uri: parsed.coverImage?.large }}
           style={styles.cover}

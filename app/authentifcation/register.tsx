@@ -18,7 +18,7 @@ export default function RegisterScreen() {
     }
 
     if (password.length < 5) {
-      Alert.alert('Password must be at least 5 characters');
+      console.log('Password must be at least 5 characters');
       return;
     }
 
@@ -27,11 +27,11 @@ export default function RegisterScreen() {
       await createUserWithEmailAndPassword(auth, email, password);
 
       // Show success message and go to home screen (or wherever you want)
-      Alert.alert('Registered successfully!');
-      router.replace('../login');
+      console.log('Registered successfully!');
+      router.replace('/authentifcation/login');
     } catch (error: any) {
       // Show error if Firebase throws one (e.g., email already in use)
-      Alert.alert('Registration failed', error.message);
+      console.log('Registration failed:', error.message);
     }
   };
 
@@ -63,7 +63,7 @@ export default function RegisterScreen() {
       {/* Link to Login screen if user already has account */}
       <Text
         style={styles.link}
-        onPress={() => router.push('../login')}
+        onPress={() => router.push('/authentifcation/login')}
       >
         Already have an account? Login
       </Text>
