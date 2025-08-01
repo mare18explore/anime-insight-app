@@ -32,6 +32,7 @@ router.post('/', async (req, res) => {
 
     // Prevent duplicates — only one of each anime per user
      const exists = await Watchlist.findOne({ userId, 'anime.id': anime.id });
+     // If the anime already exists in this user's watchlist, return a 409 Conflict
     if (exists) return res.status(409).json({ message: 'Anime already in watchlist' });
 
     // Create and save a new watchlist entry
@@ -46,6 +47,37 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to add to watchlist' });
   }
 });
+// Toggle watched/unwatched for an episode
+router.post('/progress/:userId/:animeId', async (req, res) => {
+  const { season, episode, watched } = req.body;
+
+  try {
+    const item = await Watchlist.findOne({
+      userId: req.params.userId,
+      // anime.id is a number
+      'anime.id': parseInt(req.params.animeId) 
+    });
+
+    if (!item) return res.status(404).json({ error: 'Watchlist item not found' });
+
+    // Check if this episode already has progress recorded
+    const existing = item.progress.find(p => p.season === season && p.episode === episode);
+
+    if (existing) {
+      existing.watched = watched;
+    } else {
+      item.progress.push({ season, episode, watched });
+    }
+    // Save updated progress back to database
+    await item.save();
+    res.json({ message: 'Progress updated', progress: item.progress });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update progress' });
+  }
+});
+
 
 // Remove a specific anime from a user's watchlist
 router.delete('/:userId/:animeId', async (req, res) => {
@@ -56,6 +88,27 @@ router.delete('/:userId/:animeId', async (req, res) => {
     res.json({ message: 'Removed from watchlist' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to remove from watchlist' });
+  }
+});
+// Set the anime's status to "completed" for this user
+router.post('/complete/:userId/:animeId', async (req, res) => {
+  try {
+    const { userId, animeId } = req.params;
+
+    const item = await Watchlist.findOne({
+      userId,
+      'anime.id': Number(animeId)
+    });
+
+    if (!item) return res.status(404).json({ error: 'Watchlist item not found' });
+
+    item.status = 'completed';
+    await item.save();
+
+    res.json({ message: 'Marked as completed' });
+  } catch (err) {
+    console.error('Error marking completed:', err);
+    res.status(500).json({ error: 'Failed to mark completed' });
   }
 });
 

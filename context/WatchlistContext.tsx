@@ -9,17 +9,35 @@ const router = useRouter();
 // Define what our Watchlist context should provide to components 
 // whta context this should provide 
 type WatchlistContextType = {
-  watchlist: AnimeResult[];
+  watchlist: WatchlistEntry[];
   addToWatchlist: (anime: AnimeResult) => void;
   removeFromWatchlist: (id: number) => void;
 };
 
+type WatchlistEntry = {
+  _id: string;
+  userId: string;
+  anime: {
+    id: number;
+    title: { english?: string; romaji?: string };
+    coverImage: { large: string };
+    seasons?: Record<number, number>;
+  };
+  status: 'watching' | 'completed';
+  progress: { season: number; episode: number; watched: boolean }[];
+};
+
+interface WatchlistContextValue {
+  watchlist: WatchlistEntry[];
+  removeFromWatchlist: (id: number) => void;
+  // any other context values
+}
 // Create the actual context object
 const WatchlistContext = createContext<WatchlistContextType | undefined>(undefined);
 
 // This component wraps around our app and provides watchlist data to all children
 export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
-  const [watchlist, setWatchlist] = useState<AnimeResult[]>([]);
+  const [watchlist, setWatchlist] = useState<WatchlistEntry[]>([]);
 	// Function to add anime to watchlist
 
   // grab Firebase user
@@ -55,7 +73,7 @@ export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
         const cleaned = data
           .map((entry: { anime: AnimeResult }) => entry.anime)
           .filter((anime: AnimeResult | undefined): anime is AnimeResult => anime !== undefined);
-        setWatchlist(cleaned);
+        setWatchlist(data);
       } catch (err) {
         console.error('Failed to load watchlist:', err);
       }
@@ -76,21 +94,19 @@ export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
       );
       return;
     }
-    setWatchlist((prev) => {
-      // Prevent duplicates
-      if (prev.find((item) => item.id === anime.id)) 
-				return prev;
-			// Add the new anime to the list
-      return [...prev, anime];
-    });
     try {
       await fetch(`${BASE_URL}/api/watchlist`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, anime })
+        body: JSON.stringify({ userId, anime }),
       });
+
+      //fetch full updated list from backend again
+      const res = await fetch(`${BASE_URL}/api/watchlist/${userId}`);
+      const data = await res.json();
+      setWatchlist(data);
     } catch (err) {
-      console.error('Failed to save to backend:', err);
+      console.error('Failed to add to watchlist:', err);
     }
   };
 	// Function to remove anime from watchlist by id, made edits to get rid of error
@@ -100,7 +116,7 @@ export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    setWatchlist((prev) => prev.filter((item) => item.id !== id));
+    setWatchlist((prev) => prev.filter((item) => item.anime.id !== id));
 
     try {
       await fetch(`${BASE_URL}/api/watchlist/${userId}/${id}`, {

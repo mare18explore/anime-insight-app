@@ -4,8 +4,7 @@ export default function Layout() {
     <Tabs>
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
       <Tabs.Screen name="watchlist" options={{ title: 'Watchlist' }} />
-      <Tabs.Screen name="discover" options={{ title: 'Discover' }} />
-      <Tabs.Screen name="news" options={{ title: 'News' }} />
+      <Tabs.Screen name="discover" options={{ title: 'Search' }} />
     </Tabs>
   );
 }

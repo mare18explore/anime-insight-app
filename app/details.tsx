@@ -36,7 +36,7 @@ export default function AnimeDetails() {
     isDisabled = false;
   }
   // Parse the anime object passed from previous screen
-  const parsed = typeof anime === 'string' ? JSON.parse(anime) : anime;
+  const parsed = anime && typeof anime === 'string' ? JSON.parse(anime) : anime;
   
 
   // Just in case description is missing or full object isn't passed
@@ -48,16 +48,29 @@ export default function AnimeDetails() {
     // putting checker b/c i assumed valdiity ealier 
     if (!parsed?.id) 
       return;
-    const exists = watchlist.some((item) => item.id === parsed.id);
+    const exists = watchlist.some((item) => item.anime.id === parsed.id);
     setAlreadyAdded(exists);
   }, [watchlist]);
   // confriming if anime is doubplicated 
   useEffect(() => {
-    console.log('Watchlist updated:', watchlist.map(a => a.id));
+     if (!Array.isArray(watchlist)) {
+      console.warn('Watchlist is not an array yet:', watchlist);
+      return;
+    }
+
+    const safeIds = watchlist
+      .map((a) => (a && a.anime && a.anime.id !== undefined ? a.anime.id : null))
+      .filter((id) => id !== null);
+    console.log('Watchlist updated (safe IDs):', safeIds);
     console.log('Checking for anime ID:', parsed?.id);
   }, [watchlist])
 
   const handleAdd = () => {
+    // early validation
+    if (!parsed || !parsed.id) {
+      console.warn('Parsed anime is invalid:', parsed);
+      return;
+    }
     if (alreadyAdded) 
       return;
     addToWatchlist(parsed);
