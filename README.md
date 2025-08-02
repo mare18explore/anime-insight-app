@@ -1,50 +1,50 @@
-# Welcome to your Expo app 👋
+# Anime Insight App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Anime Insight is a mobile application that allows users to search for anime, create a watchlist, and track episode progress across seasons. The app is built using React Native with Expo and TypeScript on the frontend, and Node.js with MongoDB on the backend. Firebase Authentication handles user login and registration. Anime data is fetched from the AniList GraphQL API.
 
-## Get started
+## Features
 
-1. Install dependencies
+- User authentication with Firebase
+- Anime search via AniList GraphQL API
+- Add anime to a personalized watchlist
+- Track episode progress by season
+- Episode progress stored in MongoDB and synced via Express API
+- Support for light and dark themes
 
-   ```bash
-   npm install
-   ```
+## Technologies Used
 
-2. Start the app
+- React Native (Expo)
+- TypeScript
+- Firebase Authentication
+- Node.js + Express.js
+- MongoDB (Mongoose)
+- AniList GraphQL API
 
-   ```bash
-   npx expo start
-   ```
+This project was initially set up using `create-expo-app`.
 
-In the output, you'll find options to open the app in a
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## To run the project locally:
 
 ```bash
-npm run reset-project
+git clone https://github.com/mare18explore/anime-insight-app.git
+cd anime-insight-app
+npm install
+
+# Create a .env file in the backend folder with the following:
+MONGO_URI=your_mongodb_connection_string
+PORT=5055
+
+# Create a .env file in the app/ folder with the following:
+BASE_URL=http://localhost:5055
+
+# Start the backend server
+cd backend
+node server.js
+
+# In a separate terminal window/tab, start the frontend
+npx expo start
 ```
+## Author
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Created by Abdi Mare  
+GitHub: [@mare18explore](https://github.com/mare18explore)
