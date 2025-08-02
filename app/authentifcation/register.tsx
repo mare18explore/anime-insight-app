@@ -17,8 +17,9 @@ export default function RegisterScreen() {
       return;
     }
 
-    if (password.length < 5) {
-      console.log('Password must be at least 5 characters');
+    if (password.length < 6) {
+      console.log('Password must be at least 6 characters');
+      Alert.alert('Registration Failed', 'Password must be at least 6 characters');
       return;
     }
 
@@ -38,14 +39,21 @@ export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Register</Text>
-
+      {/* option for guests to login an continue*/} 
+      <Text
+        style={styles.guest}
+        onPress={() => router.replace('/tabs')}
+      >
+        Continue as Guest
+      </Text>
       {/* Email input */}
       <TextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
-        style={styles.input}
+        placeholderTextColor="#999"
+        style={[styles.input, { color: '#fff', borderColor: '#555' }]}
       />
 
       {/* Password input */}
@@ -54,7 +62,8 @@ export default function RegisterScreen() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={styles.input}
+        placeholderTextColor="#999"
+        style={[styles.input, { color: '#fff', borderColor: '#555' }]}
       />
 
       {/* Register button */}
@@ -89,11 +98,18 @@ const styles = StyleSheet.create({
     borderColor: '#aaa',
     borderRadius: 4,
     padding: 8,
-    marginBottom: 12
+    marginBottom: 12,
+    color: '#black',
   },
   link: {
     color: 'blue',
     marginTop: 12,
     textAlign: 'center'
+  },
+  guest: {
+    color: '#4af',
+    marginTop: 15,
+    textAlign: 'center',
+    textDecorationLine: 'underline'
   }
 });

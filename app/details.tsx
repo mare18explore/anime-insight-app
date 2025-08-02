@@ -48,7 +48,7 @@ export default function AnimeDetails() {
     // putting checker b/c i assumed valdiity ealier 
     if (!parsed?.id) 
       return;
-    const exists = watchlist.some((item) => item.anime.id === parsed.id);
+    const exists = watchlist.some((item) => item?.anime?.id === parsed?.id);
     setAlreadyAdded(exists);
   }, [watchlist]);
   // confriming if anime is doubplicated 
@@ -73,6 +73,15 @@ export default function AnimeDetails() {
     }
     if (alreadyAdded) 
       return;
+
+    // msg when not logged in to redirect 
+    if (!isLoggedIn) {
+      Alert.alert('Login Required', 'Please login to add anime to your watchlist.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Login', onPress: () => router.push('/authentifcation/login') }
+      ]);
+      return;
+    }
     addToWatchlist(parsed);
     Alert.alert('Added to Watchlist');
     setAlreadyAdded(true);
@@ -80,24 +89,20 @@ export default function AnimeDetails() {
   
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Smaller image */}
-      <View style={styles.imageWrapper}>
-         {/* router back lets me go back to prev screen, so im naviagting using router,
-         back button with back test and inputted styles below */}
-        <TouchableOpacity 
-          onPress={() => {
+      <TouchableOpacity
+        onPress={() => {
           if (navigation.canGoBack?.()) {
             router.back();
           } else {
-            // fallback route
-            router.replace('/'); 
+            router.replace('/');
           }
         }}
         style={styles.backButton}
       >
-       
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
+
+      <View style={styles.imageWrapper}>
         <Image
           source={{ uri: parsed.coverImage?.large }}
           style={styles.cover}
@@ -110,6 +115,14 @@ export default function AnimeDetails() {
         {parsed.title?.romaji || parsed.title?.english || 'Untitled'}
       </Text>
 
+      {!isLoggedIn ? (
+        <TouchableOpacity onPress={handleAdd} style={styles.loginButton}>
+          <Text style={styles.loginButtonText}>Login to Add</Text>
+        </TouchableOpacity>
+      ) : (
+        <Button title={buttonTitle} onPress={handleAdd} disabled={alreadyAdded} />
+      )}
+
       {/* Rating out of 100 */}
       <Text style={styles.info}>Rating: {parsed.averageScore ?? 'N/A'}/100</Text>
 
@@ -121,11 +134,6 @@ export default function AnimeDetails() {
       {/* description */}
       <Text style={styles.description}>{cleanDescription}</Text>
           
-      <Button
-        title={buttonTitle}
-        onPress={handleAdd}
-        disabled={isDisabled}
-      />
     </ScrollView>
   );
 }
@@ -159,16 +167,30 @@ const styles = StyleSheet.create({
     color: '#555'
   },
   backButton: {
-  marginBottom: 12,
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  alignSelf: 'flex-start',
-  backgroundColor: '#eee',
-  borderRadius: 6,
-},
+    marginTop: 30, 
+    marginBottom: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    alignSelf: 'flex-start',
+    backgroundColor: '#eee',
+    borderRadius: 10
+  },
 
-backText: {
-  fontSize: 16,
-  color: '#007aff',
-}
+  backText: {
+    fontSize: 16,
+    color: '#007aff',
+  },
+  loginButton: {
+    backgroundColor: '#007aff',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    marginTop: 10
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16
+  }
 });

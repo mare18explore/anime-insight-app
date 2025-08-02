@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter, } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { BASE_URL } from '../api';
 import { fetchAnimeDetails } from '../api/anilist';
 
 // Inside the component
@@ -24,7 +25,7 @@ type Episode = {
 export default function EpisodeTrackerScreen() {
   // Get anime info and userId from route params (passed from Watchlist screen)
   const { userId, anime } = useLocalSearchParams();
-
+  const navigation = useNavigation();
   if (!userId || !anime) {
     return <Text>Missing anime or userId</Text>;
   }
@@ -81,7 +82,7 @@ export default function EpisodeTrackerScreen() {
   // Fetch user's watch progress and status from backend
   const fetchProgress = async () => {
     try {
-      const res = await fetch(`http://localhost:5055/api/watchlist/${userId}`);
+      const res = await fetch(`${BASE_URL}/api/watchlist/${userId}`);
       const data = await res.json();
 
       const item = data.find(
@@ -107,7 +108,7 @@ export default function EpisodeTrackerScreen() {
 
     try {
       const res = await fetch(
-        `http://localhost:5055/api/watchlist/progress/${userId}/${parsedAnime.id}`,
+        `${BASE_URL}/api/watchlist/progress/${userId}/${parsedAnime.id}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -126,7 +127,7 @@ export default function EpisodeTrackerScreen() {
     try {
       console.log('Marking as completed...');
       const res = await fetch(
-        `http://localhost:5055/api/watchlist/complete/${userId}/${parsedAnime.id}`,
+        `${BASE_URL}/api/watchlist/complete/${userId}/${parsedAnime.id}`,
         { method: 'POST' }
       );
       const data = await res.json();
@@ -167,8 +168,17 @@ export default function EpisodeTrackerScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={router.back} style={styles.backBtn}>
-        <Text style={styles.backText}>← Back</Text>
+      <TouchableOpacity
+            onPress={() => {
+            if (navigation.canGoBack?.()) {
+              router.back();
+            } else {
+              router.replace('/');
+            }
+          }}
+              style={styles.backButton}
+            >
+              <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.title}>
         {parsedAnime.title.english || parsedAnime.title.romaji || 'Untitled'}
@@ -261,11 +271,17 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#4caf50',
   },
-  backBtn: {
-  marginBottom: 12,
-  },
   backText: {
     fontSize: 16,
     color: '#4af',
+  },
+  backButton: {
+    marginTop: 30, // gives breathing room from the top
+    marginBottom: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    alignSelf: 'flex-start',
+    backgroundColor: '#eee',
+    borderRadius: 10
   },
 });

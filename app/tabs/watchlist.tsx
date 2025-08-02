@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { getAuth } from 'firebase/auth';
 import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useWatchlist } from '../../context/WatchlistContext';
 type WatchlistEntry = {
   _id: string;
@@ -34,7 +34,7 @@ export default function WatchlistScreen() {
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
 
-  
+  const isGuest = !userId;
   // If the list is empty, show a simple message
   if (watchlist.length === 0) {
     return (
@@ -49,22 +49,30 @@ export default function WatchlistScreen() {
       console.warn('Tried to delete anime with no ID');
       return;
     }
+    if (isGuest) {
+      Alert.alert('Login Required', 'You must be logged in to remove items from your watchlist.');
+      return;
+    }
     removeFromWatchlist(id);
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.grid}>
-        {watchlist
-          .filter((item) => item.anime && item.anime.coverImage)
-          .map((item: WatchlistEntry) => (
-          <View key={item._id} style={styles.cardWrapper}>
-            <TouchableOpacity
-              onPress={() => {
-                if (!userId) {
-                  alert('You must be logged in');
-                  return;
-                }
-                // Go to the episode tracker screen with userId and anime info
+    <FlatList
+      data={watchlist.filter((item) => item.anime && item.anime.coverImage)}
+      keyExtractor={(item) => item._id}
+      numColumns={2} // or 3 depending on your card size
+      contentContainerStyle={styles.grid}
+      renderItem={({ item }) => (
+        <View style={styles.cardWrapper}>
+          <TouchableOpacity
+            onPress={() => {
+              if (!userId) {
+                alert('You must be logged in');
+                return;
+              }
+              if (isGuest) {
+                Alert.alert('Login Required', 'Please log in to track episodes.');
+              } else {
                 router.push({
                   pathname: '/episode-tracker',
                   params: {
@@ -76,38 +84,39 @@ export default function WatchlistScreen() {
                     }),
                   },
                 });
-              }}
-              onLongPress={() => {
-                setSelectedAnimeId(selectedAnimeId === item._id ? null : item._id);
-              }}
-              style={styles.card}
-            >
-              <Image
-                source={{ uri: item.anime.coverImage?.large }}
-                resizeMode='cover'
-                style={styles.image}
-              />
+              }
+            }}
+            onLongPress={() =>
+              setSelectedAnimeId(selectedAnimeId === item._id ? null : item._id)
+            }
+            style={styles.card}
+          >
+            <Image
+              source={{ uri: item.anime.coverImage?.large }}
+              resizeMode='cover'
+              style={styles.image}
+            />
 
-              <Text style={styles.title} numberOfLines={2}>
-                {item.anime.title?.romaji || item.anime.title?.english || 'Untitled'}
-              </Text>
+            <Text style={styles.title} numberOfLines={2}>
+              {item.anime.title?.romaji || item.anime.title?.english || 'Untitled'}
+            </Text>
 
-              {item.status === 'completed' && (
-                <Text style={styles.completed}>✅ Completed</Text>
-              )}
+            {item.status === 'completed' && (
+              <Text style={styles.completed}>✅ Completed</Text>
+            )}
 
-              {selectedAnimeId === item._id && (
-                <TouchableOpacity
-                  onPress={() => handleRemove(item.anime.id)}
-                  style={styles.removeButton}
-                >
-                  <Text style={styles.removeText}>Remove</Text>
-                </TouchableOpacity>
-              )}
-            </TouchableOpacity>
-          </View>
-        ))}
-    </ScrollView>
+            {selectedAnimeId === item._id && (
+              <TouchableOpacity
+                onPress={() => handleRemove(item.anime.id)}
+                style={styles.removeButton}
+              >
+                <Text style={styles.removeText}>Remove</Text>
+              </TouchableOpacity>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+    />
   );
 }
 
@@ -127,22 +136,20 @@ const styles = StyleSheet.create({
     flex: 1
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     padding: 12,
   },
   cardWrapper: {
-    width: '20%',
-    padding: 5,
+    flex: 1,
+    alignItems: 'center',
+    padding: 8,
   },
   card: {
     alignItems: 'center',
-    marginRight: 15,
     padding: 8,
     backgroundColor: '#aec9caff',
     borderRadius: 15,
-    width: 160,
+    width: '100%', // or remove this line entirely
   },
   image: {
     width: 100,

@@ -5,7 +5,6 @@ import { Alert } from 'react-native';
 import { BASE_URL } from '../api';
 import type { AnimeResult } from '../utils/types';
 
-const router = useRouter();
 // Define what our Watchlist context should provide to components 
 // whta context this should provide 
 type WatchlistContextType = {
@@ -42,6 +41,7 @@ export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
 
   // grab Firebase user
   const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
 
   // listen for auth state changes once
   useEffect(() => {

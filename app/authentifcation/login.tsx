@@ -49,6 +49,13 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Login</Text>
+       {/* option for guests to login an continue*/} 
+      <Text
+        style={styles.guest}
+        onPress={() => router.replace('/tabs')}
+      >
+        Continue as Guest
+      </Text>
 
       {/* Email input field */}
       <TextInput
@@ -56,7 +63,8 @@ export default function LoginScreen() {
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
-        style={styles.input}
+        placeholderTextColor="#999"
+        style={[styles.input, { color: '#fff', borderColor: '#555' }]}
       />
 
       {/* Password input field */}
@@ -65,7 +73,8 @@ export default function LoginScreen() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={styles.input}
+        placeholderTextColor="#999"
+        style={[styles.input, { color: '#fff', borderColor: '#555' }]}
       />
 
       {/* Login button */}
@@ -100,11 +109,18 @@ const styles = StyleSheet.create({
     borderColor: '#aaa',
     borderRadius: 4,
     padding: 8,
-    marginBottom: 12
+    marginBottom: 12,
+    color: '#black',
   },
   link: {
     color: 'blue',
     marginTop: 12,
     textAlign: 'center'
+  },
+  guest: {
+    color: '#4af',
+    marginTop: 15,
+    textAlign: 'center',
+    textDecorationLine: 'underline'
   }
 });

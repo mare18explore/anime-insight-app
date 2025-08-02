@@ -1,13 +1,13 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-	Image,
-	Modal,
-	Pressable,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
+  Image,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 // Define the screens in your navigation stack
@@ -29,14 +29,12 @@ const ProfileMenu: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* When you tap this profile picture, it opens the logout modal */}
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <View style={{ alignItems: 'center' }}>
-            <Text style={styles.label}>Profile</Text>
-            <Image
-            source={require('../assets/images/blankProfilePicture.png')}
-            style={styles.avatar}
-            />
-        </View>
+      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.touchArea}>
+        <Image
+          source={require('../assets/images/blankProfilePicture.png')}
+          style={styles.avatar}
+        />
+        <Text style={styles.label}>Profile</Text>
       </TouchableOpacity>
 
       {/* Logout Modal */}
@@ -64,15 +62,17 @@ export default ProfileMenu;
 // Styles for the profile picture and logout modal
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    right: 20,
     zIndex: 999,
   },
+  touchArea: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 5, 
+  },
   avatar: {
-    width: 50,
-    height: 40,
-    borderRadius: 30,
+    width: 35,
+    height: 35,
+    borderRadius: 25,
   },
   overlay: {
     flex: 1,
@@ -90,12 +90,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   menuItem: {
-    fontSize: 16,
+    fontSize: 15,
     paddingVertical: 8,
     color: '#333',
   },
   label: {
-    fontSize: 15,
+    fontSize: 13,
     marginBottom: 5,
     color: '#444',
 	},
