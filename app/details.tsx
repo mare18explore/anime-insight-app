@@ -90,13 +90,7 @@ export default function AnimeDetails() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity
-        onPress={() => {
-          if (navigation.canGoBack?.()) {
-            router.back();
-          } else {
-            router.replace('/');
-          }
-        }}
+        onPress={() => router.replace('/tabs/watchlist')}
         style={styles.backButton}
       >
         <Text style={styles.backText}>← Back</Text>

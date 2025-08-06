@@ -92,3 +92,48 @@ export const fetchAnimeDetails = async (id) => {
     return null;
   }
 };
+// Get a list of similar anime using AniList's recommendation API
+export const fetchRecommendations = async (animeId) => {
+  const query = `
+    query ($id: Int) {
+      Media(id: $id, type: ANIME) {
+        recommendations(perPage: 10) {
+          nodes {
+            mediaRecommendation {
+              id
+              title {
+                romaji
+                english
+              }
+              coverImage {
+                large
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = { id: animeId };
+
+  try {
+    const res = await fetch('https://graphql.anilist.co', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+
+    const json = await res.json();
+
+    // Pull out the recommended anime info from AniList’s response
+    return json.data.Media.recommendations.nodes.map(
+      (node) => node.mediaRecommendation
+    );
+  } catch (err) {
+    console.error('Failed to fetch recommendations:', err);
+    return [];
+  }
+};

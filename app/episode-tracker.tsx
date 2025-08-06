@@ -2,11 +2,12 @@ import { useLocalSearchParams, useNavigation, useRouter, } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Button,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { BASE_URL } from '../api';
 import { fetchAnimeDetails } from '../api/anilist';
@@ -168,21 +169,40 @@ export default function EpisodeTrackerScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      
       <TouchableOpacity
-            onPress={() => {
-            if (navigation.canGoBack?.()) {
-              router.back();
-            } else {
-              router.replace('/');
-            }
-          }}
-              style={styles.backButton}
-            >
-              <Text style={styles.backText}>← Back</Text>
+        onPress={() => router.back()}
+        style={styles.backButton}
+      >
+        <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
+      
       <Text style={styles.title}>
         {parsedAnime.title.english || parsedAnime.title.romaji || 'Untitled'}
       </Text>
+
+      
+      {animeDetails?.coverImage?.large && (
+        <Image
+          source={{ uri: animeDetails.coverImage.large }}
+          style={styles.animeImage}
+          resizeMode="cover"
+        />
+      )}
+  
+      <TouchableOpacity
+        style={styles.findSimilarBtn}
+        onPress={() => {
+          router.push({
+            pathname: '/recommendation',
+            params: { animeId: parsedAnime.id },
+          });
+        }}
+      >
+        <Text style={styles.findSimilarText}>Find Similar Anime</Text>
+      </TouchableOpacity>
+
+      
 
       {status === 'completed' && (
         <Text style={styles.completedLabel}>✅ Completed</Text>
@@ -284,4 +304,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     borderRadius: 10
   },
+  animeImage: {
+  width: '22%',
+  height: 250,
+  borderRadius: 10,
+  marginBottom: 10,
+},
+
+findSimilarBtn: {
+  alignSelf: 'flex-start',
+  backgroundColor: '#4af',
+  paddingVertical: 10,
+  paddingHorizontal: 10,
+  borderRadius: 10,
+  marginBottom: 10,
+},
+
+findSimilarText: {
+  color: 'white',
+  fontSize: 14,
+  fontWeight: '600',
+},
 });
